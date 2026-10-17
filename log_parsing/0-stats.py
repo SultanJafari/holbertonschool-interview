@@ -20,7 +20,9 @@ def print_statistics(total_file_size, status_counts):
 def main():
     total_file_size = 0
     line_count = 0
-    valid_statuses = ['200', '301', '400', '401', '403', '404', '405', '500']
+    valid_statuses = [
+        '200', '301', '400', '401', '403', '404', '405', '500'
+    ]
     status_counts = {code: 0 for code in valid_statuses}
 
     has_input = False
@@ -50,7 +52,6 @@ def main():
         print_statistics(total_file_size, status_counts)
         raise
 
-    # إذا انتهت القراءة (حتى لو كان الإدخال فارغاً كلياً أو أقل من 10 أسطر ولم تطبعه الدفعة الأخيرة)
     if line_count > 0 or not has_input:
         print_statistics(total_file_size, status_counts)
 
