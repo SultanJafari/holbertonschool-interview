@@ -1,51 +1,48 @@
 #!/usr/bin/python3
-"""Parse log lines and print accumulated statistics."""
 import sys
-import re
 
-
-def print_stats(total_size, status_codes):
-    """Print the total file size and status code counts."""
-    print("File size: {}".format(total_size))
-    for code in sorted(status_codes):
-        print("{}: {}".format(code, status_codes[code]))
-
+def print_statistics(total_file_size, status_counts):
+    """Prints the accumulated total file size and status code counts."""
+    print("File size: {}".format(total_file_size))
+    for code in sorted(status_counts.keys()):
+        if status_counts[code] > 0:
+            print("{}: {}".format(code, status_counts[code]))
 
 def main():
-    """Read log lines from stdin and calculate statistics."""
-    total_size = 0
-    status_codes = {}
-    valid_codes = (200, 301, 400, 401, 403, 404, 405, 500)
+    total_file_size = 0
     line_count = 0
-
-    pattern = re.compile(
-        r'^\S+ - \[.+?\] ".*?" (\d{3}) (\d+)\s*$'
-    )
+    valid_statuses = ['200', '301', '400', '401', '403', '404', '405', '500']
+    status_counts = {code: 0 for code in valid_statuses}
 
     try:
         for line in sys.stdin:
+            parts = line.split()
+            if len(parts) >= 2:
+                # استخراج كود الحالة وحجم الملف بناءً على النمط المتوقع
+                try:
+                    file_size = int(parts[-1])
+                    status_code = parts[-2]
+
+                    total_file_size += file_size
+
+                    if status_code in status_counts:
+                        status_counts[status_code] += 1
+                except ValueError:
+                    pass
+
             line_count += 1
-            match = pattern.match(line.rstrip("\r\n"))
 
-            if match:
-                status = int(match.group(1))
-                size = int(match.group(2))
-                total_size += size
-
-                if status in valid_codes:
-                    status_codes[status] = (
-                        status_codes.get(status, 0) + 1
-                    )
-
-            if line_count % 10 == 0:
-                print_stats(total_size, status_codes)
-
-        if line_count % 10 != 0 or line_count == 0:
-            print_stats(total_size, status_codes)
+            if line_count == 10:
+                print_statistics(total_file_size, status_counts)
+                line_count = 0
 
     except KeyboardInterrupt:
-        print_stats(total_size, status_codes)
+        print_statistics(total_file_size, status_counts)
+        raise
 
+    # طباعة الإحصائيات النهائية إذا انتهى الإدخال ولم تكتمل الدفعة (10 أسطر)
+    if line_count > 0:
+        print_statistics(total_file_size, status_counts)
 
 if __name__ == "__main__":
     main()
