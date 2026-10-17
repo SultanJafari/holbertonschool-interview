@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 """Parse log lines and print accumulated statistics."""
 import sys
@@ -19,7 +20,7 @@ def main():
     line_count = 0
 
     pattern = re.compile(
-        r'^\S+ - \[.+?\] ".*?" (\d{3}) (\d+)$'
+        r'^\S+ - \[.+?\] ".*?" (\d{3}) (\d+)\s*$'
     )
 
     try:
