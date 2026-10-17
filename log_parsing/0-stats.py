@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 """Parse log lines and print accumulated statistics."""
 import sys
@@ -25,7 +26,7 @@ def main():
     try:
         for line in sys.stdin:
             line_count += 1
-            match = pattern.fullmatch(line.rstrip("\r\n"))
+            match = pattern.match(line.rstrip("\r\n"))
 
             if match:
                 status = int(match.group(1))
