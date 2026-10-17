@@ -23,8 +23,10 @@ def main():
     valid_statuses = ['200', '301', '400', '401', '403', '404', '405', '500']
     status_counts = {code: 0 for code in valid_statuses}
 
+    has_input = False
     try:
         for line in sys.stdin:
+            has_input = True
             parts = line.split()
             if len(parts) >= 2:
                 try:
@@ -48,7 +50,8 @@ def main():
         print_statistics(total_file_size, status_counts)
         raise
 
-    if line_count > 0:
+    # إذا انتهت القراءة (حتى لو كان الإدخال فارغاً كلياً أو أقل من 10 أسطر ولم تطبعه الدفعة الأخيرة)
+    if line_count > 0 or not has_input:
         print_statistics(total_file_size, status_counts)
 
 
