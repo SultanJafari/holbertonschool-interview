@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 """Parse log lines and print accumulated statistics."""
 import sys
