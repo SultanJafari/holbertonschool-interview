@@ -1,5 +1,6 @@
+
 #!/usr/bin/python3
-"""Parse log lines and print accumulated metrics."""
+"""Parse log lines and print accumulated statistics."""
 import sys
 import re
 
@@ -12,7 +13,7 @@ def print_stats(total_size, status_codes):
 
 
 def main():
-    """Read stdin and calculate log statistics."""
+    """Read log lines from stdin and calculate statistics."""
     total_size = 0
     status_codes = {}
     valid_codes = (200, 301, 400, 401, 403, 404, 405, 500)
@@ -21,7 +22,7 @@ def main():
     pattern = re.compile(
         r'^\d{1,3}(?:\.\d{1,3}){3} - \[.+\] '
         r'"GET /projects/260 HTTP/1\.1" '
-        r'(\d{3}) (\d+)$'
+        r'(\d+) (\d+)$'
     )
 
     try:
@@ -43,7 +44,7 @@ def main():
             if line_count % 10 == 0:
                 print_stats(total_size, status_codes)
 
-        if line_count % 10 != 0:
+        if line_count % 10 != 0 or line_count == 0:
             print_stats(total_size, status_codes)
 
     except KeyboardInterrupt:
