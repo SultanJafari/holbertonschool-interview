@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 """Parse log lines and print accumulated statistics."""
 import sys
@@ -19,20 +20,17 @@ def main():
     line_count = 0
 
     pattern = re.compile(
-        r'^\d{1,3}(?:\.\d{1,3}){3} - \[.+\] '
-        r'"GET /projects/260 HTTP/1\.1" '
-        r'(\d+) (\d+)$'
+        r'^\S+ - \[.+?\] ".*?" (\d{3}) (\d+)$'
     )
 
     try:
         for line in sys.stdin:
             line_count += 1
-            match = pattern.fullmatch(line.rstrip("\n"))
+            match = pattern.fullmatch(line.rstrip("\r\n"))
 
             if match:
                 status = int(match.group(1))
                 size = int(match.group(2))
-
                 total_size += size
 
                 if status in valid_codes:
