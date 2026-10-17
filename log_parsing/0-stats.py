@@ -1,5 +1,13 @@
 #!/usr/bin/python3
+"""
+Module 0-stats
+A script that reads stdin line by line and computes metrics:
+- Total file size
+- Number of lines by status code
+"""
+
 import sys
+
 
 def print_statistics(total_file_size, status_counts):
     """Prints the accumulated total file size and status code counts."""
@@ -7,6 +15,7 @@ def print_statistics(total_file_size, status_counts):
     for code in sorted(status_counts.keys()):
         if status_counts[code] > 0:
             print("{}: {}".format(code, status_counts[code]))
+
 
 def main():
     total_file_size = 0
@@ -18,7 +27,6 @@ def main():
         for line in sys.stdin:
             parts = line.split()
             if len(parts) >= 2:
-                # استخراج كود الحالة وحجم الملف بناءً على النمط المتوقع
                 try:
                     file_size = int(parts[-1])
                     status_code = parts[-2]
@@ -40,9 +48,9 @@ def main():
         print_statistics(total_file_size, status_counts)
         raise
 
-    # طباعة الإحصائيات النهائية إذا انتهى الإدخال ولم تكتمل الدفعة (10 أسطر)
     if line_count > 0:
         print_statistics(total_file_size, status_counts)
+
 
 if __name__ == "__main__":
     main()
