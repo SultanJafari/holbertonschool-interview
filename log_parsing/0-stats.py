@@ -1,56 +1,52 @@
+
 #!/usr/bin/python3
-"""
-A script that reads stdin line by line and computes metrics.
-"""
 import sys
+import re
 
 
-def print_stats(stats, total_file_size):
-    """Prints the accumulated statistics."""
-    print("File size: {}".format(total_file_size))
-    for code in sorted(stats.keys()):
-        if stats[code] > 0:
-            print("{}: {}".format(code, stats[code]))
+def print_stats(total_size, status_codes):
+    """Print the accumulated log statistics."""
+    print("File size: {}".format(total_size))
+
+    for code in sorted(status_codes):
+        print("{}: {}".format(code, status_codes[code]))
 
 
-if __name__ == "__main__":
-    total_file_size = 0
-    stats = {
-        200: 0,
-        301: 0,
-        400: 0,
-        401: 0,
-        403: 0,
-        404: 0,
-        405: 0,
-        500: 0
-    }
+def main():
+    """Read logs from stdin and calculate statistics."""
+    total_size = 0
+    status_codes = {}
+    valid_codes = (200, 301, 400, 401, 403, 404, 405, 500)
     line_count = 0
+
+    pattern = re.compile(
+        r'^\d{1,3}(?:\.\d{1,3}){3} - \[.+\] '
+        r'"GET /projects/260 HTTP/1\.1" '
+        r'(\d+) (\d+)$'
+    )
 
     try:
         for line in sys.stdin:
-            parts = line.split()
-            if len(parts) < 7:
-                continue
-
-            try:
-                file_size = int(parts[-1])
-                status_code = int(parts[-2])
-            except ValueError:
-                continue
-
-            if status_code not in stats:
-                continue
-
-            total_file_size += file_size
-            stats[status_code] += 1
             line_count += 1
+            match = pattern.match(line.strip())
 
-            if line_count == 10:
-                print_stats(stats, total_file_size)
-                line_count = 0
+            if match:
+                status = int(match.group(1))
+                size = int(match.group(2))
+
+                total_size += size
+
+                if status in valid_codes:
+                    status_codes[status] = (
+                        status_codes.get(status, 0) + 1
+                    )
+
+            if line_count % 10 == 0:
+                print_stats(total_size, status_codes)
 
     except KeyboardInterrupt:
-        print_stats(stats, total_file_size)
-        raise
+        print_stats(total_size, status_codes)
 
+
+if __name__ == "__main__":
+    main()
